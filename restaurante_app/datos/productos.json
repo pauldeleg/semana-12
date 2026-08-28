@@ -2,25 +2,22 @@
     {
         "codigo": "223",
         "nombre": "pollo",
-        "categoria": "proteinas",
-        "precio": 7.5
+        "categoria": "carnes",
+        "precio": 7.5,
+        "stock": 0
+    },
+    {
+        "codigo": "224",
+        "nombre": "jugo de mango",
+        "categoria": "bebidas",
+        "precio": 1.5,
+        "stock": 3
     },
     {
         "codigo": "225",
-        "nombre": "leche",
-        "categoria": "lacteos",
-        "precio": 2.5
-    },
-    {
-        "codigo": "226",
-        "nombre": "manzana",
-        "categoria": "frutas",
-        "precio": 1.0
-    },
-    {
-        "codigo": "227",
-        "nombre": "jugo de naranja",
-        "categoria": "bebidas",
-        "precio": 1.5
+        "nombre": "pizza",
+        "categoria": "comida rapida",
+        "precio": 10.5,
+        "stock": 2
     }
 ]

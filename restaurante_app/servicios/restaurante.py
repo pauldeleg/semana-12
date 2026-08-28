@@ -1,10 +1,13 @@
 from modelos.producto import Producto
 from modelos.usuario import Usuario
+from modelos.venta import Venta
+
 
 class Restaurante:
     def __init__(self):
         self.productos: list[Producto] = []
         self.usuarios: list[Usuario] = []
+        self.ventas: list[Venta] = []
         self.información: tuple[str, str, str] = (
             "Restaurante Las Delicias",
             "Av. Ordonez Lasso ",
@@ -34,7 +37,8 @@ class Restaurante:
         codigo: str,
         nombre: str,
         categoria: str,
-        precio: float
+        precio: float,
+        stock: int
     )   -> bool:
         
         """Actualiza los datos de un producto existente."""
@@ -49,13 +53,14 @@ class Restaurante:
                 codigo = codigo,
                 nombre = nombre,
                 categoria = categoria,
-                precio = precio
+                precio = precio,
+                stock = stock
             )
         
             producto.nombre = producto_actualizado.nombre
             producto.categoria = producto_actualizado.categoria
             producto.precio = producto_actualizado.precio
-        
+            producto.stock = producto_actualizado.stock
             return True
         except ValueError:
              return False
@@ -75,10 +80,7 @@ class Restaurante:
         """Devuelve la lista de productos."""
         return self.productos.copy()
     
-    def cargar_productos(
-        self,
-        productos: list[Producto]
-    ) -> None:
+    def cargar_productos(self,productos: list[Producto]) -> None:
         """
         Recibe los productos cargados desde JSON.
         """
@@ -89,12 +91,18 @@ class Restaurante:
     def registrar_usuario(self, usuario: Usuario) -> bool:
         """Registra un usuario evitando identificaciones duplicadas."""
         
-        for usuario_registrado in self.usuarios:
-            if (usuario_registrado.identificación == usuario.identificación):
-                return False
-            
+        if self.buscar_usuario(usuario.identificación) is not None:
+            return False
+        
         self.usuarios.append(usuario)
         return True
+    
+    def buscar_usuario(self, identificación: str) -> Usuario | None:
+        
+        for usuario in self.usuarios:
+            if usuario.identificación == identificación:
+                return usuario
+        return None    
     
     
     def listar_usuarios(self) -> list[Usuario]:
@@ -103,17 +111,91 @@ class Restaurante:
         return self.usuarios.copy()
     
     
-    def obtener_categorias(self) -> set[str]:
-        """Obtiene las categorias unicas de los productos."""
+    def cargar_usuarios(self,usuarios: list[Usuario]) -> None:
+
+        self.usuarios = usuarios.copy()
+
+    # ==========================================
+    # VENTAS
+    # ==========================================
+
+    def vender_producto(
+        self,
+        codigo_producto: str,
+        identificacion_usuario: str,
+        cantidad: int
+    ) -> bool:
+        """
+        Registra una venta si el usuario y producto existen
+        y existe stock suficiente.
+        """
+
+        usuario = self.buscar_usuario(identificacion_usuario)
+
+        producto = self.buscar_producto(codigo_producto)
         
+        if usuario is None or producto is None:
+            return False
+
+        # Comprobar cantidad
+        if cantidad <= 0:
+            return False
+
+        # Comprobar stock
+        if producto.stock < cantidad:
+            return False
+
+        # Crear la venta
+        venta = Venta(
+            usuario_id=usuario.identificación,
+            producto_codigo=producto.codigo,
+            cantidad=cantidad
+        )
+
+        # Agregar la venta a la colección
+        self.ventas.append(venta)
+
+        # Disminuir el stock
+        producto.vender(cantidad)
+
+        return True
+
+    def consultar_ventas_usuario(self, identificacion_usuario: str) -> list[Venta]:
+        """
+        Devuelve las ventas realizadas por un usuario.
+        """
+
+        ventas_usuario: list[Venta] = []
+
+        for venta in self.ventas:
+            if venta.usuario_id == identificacion_usuario:
+                ventas_usuario.append(venta)
+
+        return ventas_usuario
+
+    def listar_ventas(self) -> list[Venta]:
+
+        return self.ventas.copy()
+
+    def cargar_ventas(self, ventas: list[Venta]) -> None:
+
+        self.ventas = ventas.copy()
+
+    # ==========================================
+    # CATEGORÍAS
+    # ==========================================
+
+    def obtener_categorias(self) -> set[str]:
+
         return {
             producto.categoria
             for producto in self.productos
-            
-        }    
-        
-        
-    def ontener_información(self) -> tuple[str, str, str]:
-        """Devuelve la información estable del restaurante."""
-        
-        return self.información    
+        }
+
+    # ==========================================
+    # INFORMACIÓN
+    # ==========================================
+
+    def obtener_informacion(self) -> tuple[str, str, str]:
+
+        return self.informacion

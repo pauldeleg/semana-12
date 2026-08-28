@@ -1,43 +1,54 @@
-# restaurante_app - Semana 10
+# Sistema de Restaurante - Semana 11
 
-## Nombre completo del estudiante
+## Nombre del estudiante
 
 **Jonnathan Paul Deleg Condo**
 
 ---
 
-## Descripción del sistema
+## 1. Descripción del sistema
 
-`restaurante_app` es un sistema desarrollado en Python para administrar
-los productos y usuarios de un restaurante mediante programación
-orientada a objetos.
+El proyecto `restaurante_app` es un sistema de restaurante desarrollado en Python que permite administrar productos, usuarios y ventas mediante un menú interactivo por consola.
 
-El sistema permite registrar, buscar, actualizar, eliminar y listar
-productos. También permite registrar y listar usuarios.
+Esta versión corresponde a la evolución del proyecto desarrollado en semanas anteriores. Se incorporó el manejo de stock, la creación de la entidad `Venta` y la relación entre usuarios y productos mediante las ventas realizadas.
 
-Como mejora correspondiente a la Semana 10, se incorporó la
-persistencia de productos mediante un archivo en formato JSON. Esto
-permite que los productos registrados no se pierdan cuando el programa
-se cierra y puedan recuperarse automáticamente cuando la aplicación
-vuelva a iniciarse.
+El sistema permite registrar, buscar, actualizar, eliminar y listar productos, registrar y consultar usuarios, realizar ventas y consultar las ventas realizadas por un usuario.
 
-La persistencia se aplica únicamente a los productos. Los usuarios
-continúan almacenándose temporalmente en memoria.
+Además, la información se almacena en archivos JSON para que los productos, usuarios y ventas permanezcan disponibles después de cerrar y volver a ejecutar la aplicación.
 
 ---
 
-## Estructura del proyecto
+## 2. Objetivo
+
+El objetivo de esta actividad es ampliar el sistema de restaurante para trabajar con relaciones entre objetos y colecciones.
+
+La operación principal incorporada es la venta de productos. Para realizar una venta, el sistema comprueba que exista el usuario, que exista el producto, que la cantidad sea válida y que exista suficiente stock.
+
+Cuando la venta es correcta:
+
+1. Se crea un objeto `Venta`.
+2. La venta se agrega a la colección de ventas.
+3. Se disminuye el stock del producto.
+4. Se guardan los cambios en `productos.json`.
+5. Se guarda la nueva venta en `ventas.json`.
+
+---
+
+## 3. Estructura del proyecto
 
 ```text
 restaurante_app/
 │
 ├── datos/
-│   └── productos.json
+│   ├── productos.json
+│   ├── usuarios.json
+│   └── ventas.json
 │
 ├── modelos/
 │   ├── __init__.py
 │   ├── producto.py
-│   └── usuario.py
+│   ├── usuario.py
+│   └── venta.py
 │
 ├── servicios/
 │   ├── __init__.py
