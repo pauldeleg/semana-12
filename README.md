@@ -25,3 +25,23 @@ Se incorporaron índices auxiliares para:
 Las listas principales no fueron eliminadas, ya que continúan siendo necesarias para almacenar, listar y persistir los objetos.
 
 ## 3. Estructura del proyecto
+```text
+restaurante_app/
+├── datos/
+│   ├── productos.json
+│   ├── usuarios.json
+│   └── ventas.json
+│
+├── modelos/
+│   ├── __init__.py
+│   ├── producto.py
+│   ├── usuario.py
+│   └── venta.py
+│
+├── servicios/
+│   ├── __init__.py
+│   ├── archivo_servicio.py
+│   └── restaurante.py
+│
+├── main.py
+└── README.md
