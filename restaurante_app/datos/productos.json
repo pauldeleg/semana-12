@@ -1,0 +1,9 @@
+[
+    {
+        "codigo": "P008",
+        "nombre": "jugo",
+        "categoria": "bebida",
+        "precio": 1.5,
+        "stock": 3
+    }
+]

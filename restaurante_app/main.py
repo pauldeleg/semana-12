@@ -196,13 +196,13 @@ def main() -> None:
 
         elif opcion == "7":
 
-            identificacion = input("Ingrese la identificación: ").strip()
+            identificación = input("Ingrese la identificación: ").strip()
 
-            usuario = restaurante.buscar_usuario(identificacion)
+            usuario = restaurante.buscar_usuario(identificación)
 
             if usuario:
                 print("\nUsuario encontrado:")
-                print(f"Identificación: {usuario.identificacion}")
+                print(f"Identificación: {usuario.identificación}")
                 print(f"Nombre: {usuario.nombre}")
                 print(f"Correo: {usuario.correo}")
             else:
@@ -268,7 +268,7 @@ def main() -> None:
                     cantidad
                 ):
 
-                    archivo.guardar_productos(restaurante.listar_productos())
+                    archivo.guardar_productos(restaurante.listar_producto())
 
                     archivo.guardar_ventas(restaurante.listar_ventas())
 

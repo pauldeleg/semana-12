@@ -23,7 +23,7 @@ class Usuario:
         
     def convertir_a_diccionario(self) -> dict:
         return {
-            "identificacion": self.identificacion,
+            "identificación": self.identificación,
             "nombre": self.nombre,
             "correo": self.correo
         }
@@ -31,7 +31,7 @@ class Usuario:
     @classmethod
     def desde_diccionario(cls, datos: dict) -> "Usuario":
         return cls(
-            identificacion=datos["identificacion"],
+            identificación=datos["identificación"],
             nombre=datos["nombre"],
             correo=datos["correo"]
         )

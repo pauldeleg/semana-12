@@ -6,7 +6,7 @@ from modelos.venta import Venta
 
 
 class ArchivoServicio:
-    def __init__(self, carpeta: str = "datos"):
+    def __init__(self, carpeta: str = "restaurante_app/datos"):
         self.carpeta = carpeta 
         
     def _ruta(self, nombre_archivo: str) -> str:
