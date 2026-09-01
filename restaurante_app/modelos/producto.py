@@ -22,12 +22,12 @@ class Producto:
             raise ValueError("El precio debe ser mayor que cero.")
         
         if stock < 0:
-            raise ValueError("El stock no puede ser negaivo.")
+            raise ValueError("El stock no puede ser negativo.")
         
 
-        self.codigo = codigo.strip()
-        self.nombre = nombre.strip()
-        self.categoria = categoria.strip()
+        self.codigo = codigo
+        self.nombre = nombre
+        self.categoria = categoria
         self. precio = precio
         self.stock = stock
         
@@ -37,44 +37,50 @@ class Producto:
             raise ValueError("La cantidad debe ser mayor que cero.")
         
         if cantidad > self.stock:
-            raise ValueError("No existe stock suficiente.")
+            raise ValueError("Stock insuficiente.")
         
         self.stock -= cantidad
            
         
-    def to_dict(self) -> dict:
-        """
-        Convierte el objeto Producto en un diccionario
-        para poder almacenarlo en formato JSON.
-        """
+    def actualizar(
+        self,
+        nombre: str,
+        categoria: str,
+        precio: float,
+        stock: int
+    ) -> None:
+        if not nombre.strip():
+            raise ValueError("El nombre no puede estar vacío.")
+
+        if not categoria.strip():
+            raise ValueError("La categoría no puede estar vacía.")
+
+        if precio <= 0:
+            raise ValueError("El precio debe ser mayor que cero.")
+
+        if stock < 0:
+            raise ValueError("El stock no puede ser negativo.")
+
+        self.nombre = nombre
+        self.categoria = categoria
+        self.precio = precio
+        self.stock = stock
+
+    def convertir_a_diccionario(self) -> dict:
         return {
             "codigo": self.codigo,
             "nombre": self.nombre,
             "categoria": self.categoria,
             "precio": self.precio,
-            "stock" : self.stock
+            "stock": self.stock
         }
 
     @classmethod
-    def from_dict(cls, datos: dict) -> "Producto":
-        """
-        Reconstruye un objeto Producto a partir
-        de un diccionario obtenido desde JSON.
-        """
+    def desde_diccionario(cls, datos: dict) -> "Producto":
         return cls(
-            codigo=str(datos["codigo"]),
-            nombre=str(datos["nombre"]),
-            categoria=str(datos["categoria"]),
+            codigo=datos["codigo"],
+            nombre=datos["nombre"],
+            categoria=datos["categoria"],
             precio=float(datos["precio"]),
             stock=int(datos["stock"])
-        )    
-        
-    def __str__(self) -> str:
-        return (
-            f"Codigo: {self.codigo} | "
-            f"Nombre: {self.nombre} | "
-            f"Categoria: {self.categoria} | "
-            f"Precio: ${self.precio:.2f}"
-            f"Stock: {self.stock}"
-        )    
-        
+        )

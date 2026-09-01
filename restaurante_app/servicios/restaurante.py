@@ -4,33 +4,58 @@ from modelos.venta import Venta
 
 
 class Restaurante:
-    def __init__(self):
-        self.productos: list[Producto] = []
-        self.usuarios: list[Usuario] = []
-        self.ventas: list[Venta] = []
-        self.información: tuple[str, str, str] = (
-            "Restaurante Las Delicias",
-            "Av. Ordonez Lasso ",
-            "09987653721"
-        )
+    def __init__(
+        self,
+        productos: list[Producto] | None = None,
+        usuarios: list[Usuario] | None = None,
+        ventas: list[Venta] | None = None
+    ):
+        
+        self._productos = productos or []
+        self._usuarios = usuarios or []
+        self._ventas = ventas or []
+        
+        self._indice_productos = {}
+        self._indice_usuarios = {}
+        
+        
+        self._ventas_por_usuario  = {}
+        self._reconstruir_indices()
+        
+        
+    def _reconstruir_indices(self) -> None:
+        self._indice_productos.clear()
+        self._indice_usuarios.clear()
+        self._ventas_por_usuario.clear()
+
+        for producto in self._productos:
+            self._indice_productos[producto.codigo] = producto
+
+        for usuario in self._usuarios:
+            self._indice_usuarios[usuario.identificacion] = usuario
+
+        for venta in self._ventas:
+            if venta.usuario_id not in self._ventas_por_usuario:
+                self._ventas_por_usuario[venta.usuario_id] = []
+
+            self._ventas_por_usuario[venta.usuario_id].append(venta)
+    
         
     def registrar_producto(self, producto: Producto ) -> bool:
         """Registrar un producto evitando codigos duplicados."""    
         
         
-        if self.buscar_producto(producto.codigo) is not None:
+        if producto.codigo in self._indice_productos:
             return False
-        self.productos.append(producto)
+
+        self._productos.append(producto)
+        self._indice_productos[producto.codigo] = producto
+
         return True
-    
+
     def buscar_producto(self, codigo: str) -> Producto | None:
-        """Busca un producto utilizando su codigo."""
-        
-        for producto in self.productos:
-            if producto.codigo == codigo:
-                return producto
-            
-        return None
+        # Búsqueda O(1) promedio mediante diccionario
+        return self._indice_productos.get(codigo)
     
     def actualizar_producto(
         self, 
@@ -48,22 +73,16 @@ class Restaurante:
         if producto is None:
             return False
         
-        try:
-            producto_actualizado = Producto(
-                codigo = codigo,
-                nombre = nombre,
-                categoria = categoria,
-                precio = precio,
-                stock = stock
-            )
         
-            producto.nombre = producto_actualizado.nombre
-            producto.categoria = producto_actualizado.categoria
-            producto.precio = producto_actualizado.precio
-            producto.stock = producto_actualizado.stock
-            return True
-        except ValueError:
-             return False
+        producto.actualizar(
+                nombre,
+                categoria,
+                precio,
+                stock 
+        )
+        
+        return True
+    
     
     def eliminar_producto(self, codigo: str) -> bool:
         """Elimina un producto mediante su codigo."""
@@ -73,47 +92,37 @@ class Restaurante:
         if producto is None:
             return False
         
-        self.productos.remove(producto)
+        self._productos.remove(producto)
+        self._indice_productos[codigo]
+        
         return True
     
     def listar_producto(self) -> list[Producto]:
         """Devuelve la lista de productos."""
-        return self.productos.copy()
+        return self._productos
     
-    def cargar_productos(self,productos: list[Producto]) -> None:
-        """
-        Recibe los productos cargados desde JSON.
-        """
-
-        self.productos = productos.copy()
 
     
     def registrar_usuario(self, usuario: Usuario) -> bool:
         """Registra un usuario evitando identificaciones duplicadas."""
         
-        if self.buscar_usuario(usuario.identificación) is not None:
+        if usuario.identificación in self._indice_usuarios:
             return False
         
-        self.usuarios.append(usuario)
+        self._usuarios.append(usuario)
+        self._indice_usuarios[usuario.identificación] = usuario
+        
         return True
     
     def buscar_usuario(self, identificación: str) -> Usuario | None:
         
-        for usuario in self.usuarios:
-            if usuario.identificación == identificación:
-                return usuario
-        return None    
+        return self._indice_usuarios.get(identificación)    
     
     
     def listar_usuarios(self) -> list[Usuario]:
         """Devuelve la lista de usuarios."""
         
-        return self.usuarios.copy()
-    
-    
-    def cargar_usuarios(self,usuarios: list[Usuario]) -> None:
-
-        self.usuarios = usuarios.copy()
+        return self._usuarios
 
     # ==========================================
     # VENTAS
@@ -134,7 +143,10 @@ class Restaurante:
 
         producto = self.buscar_producto(codigo_producto)
         
-        if usuario is None or producto is None:
+        if usuario is None:
+            return False
+        
+        if producto is None:
             return False
 
         # Comprobar cantidad
@@ -147,39 +159,32 @@ class Restaurante:
 
         # Crear la venta
         venta = Venta(
-            usuario_id=usuario.identificación,
-            producto_codigo=producto.codigo,
-            cantidad=cantidad
+            usuario.identificación,
+            producto.codigo,
+            cantidad
         )
 
         # Agregar la venta a la colección
-        self.ventas.append(venta)
+        self._ventas.append(venta)
 
         # Disminuir el stock
         producto.vender(cantidad)
+        
+        if usuario.identificación not in self._ventas_por_usuario:
+            self._ventas_por_usuario[usuario.identificación] = []
+            
+        self._ventas_por_usuario[usuario.identificación].append(venta)    
 
         return True
 
     def consultar_ventas_usuario(self, identificacion_usuario: str) -> list[Venta]:
-        """
-        Devuelve las ventas realizadas por un usuario.
-        """
-
-        ventas_usuario: list[Venta] = []
-
-        for venta in self.ventas:
-            if venta.usuario_id == identificacion_usuario:
-                ventas_usuario.append(venta)
-
-        return ventas_usuario
+        
+        return self._ventas_por_usuario.get(identificacion_usuario, [])
 
     def listar_ventas(self) -> list[Venta]:
 
-        return self.ventas.copy()
+        return self._ventas
 
-    def cargar_ventas(self, ventas: list[Venta]) -> None:
-
-        self.ventas = ventas.copy()
 
     # ==========================================
     # CATEGORÍAS
@@ -189,13 +194,5 @@ class Restaurante:
 
         return {
             producto.categoria
-            for producto in self.productos
+            for producto in self._productos
         }
-
-    # ==========================================
-    # INFORMACIÓN
-    # ==========================================
-
-    def obtener_informacion(self) -> tuple[str, str, str]:
-
-        return self.informacion

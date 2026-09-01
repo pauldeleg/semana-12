@@ -16,28 +16,22 @@ class Usuario:
         if not correo.strip():
             raise ValueError("El correo no puede estar vacío.")
 
-        self.identificación = identificación.strip()
-        self.nombre = nombre.strip()
-        self.correo = correo.strip()
+        self.identificación = identificación
+        self.nombre = nombre
+        self.correo = correo
         
-    def to_dic(self) -> dict:
-        return{
-            "identificación": self.identificación,
+        
+    def convertir_a_diccionario(self) -> dict:
+        return {
+            "identificacion": self.identificacion,
             "nombre": self.nombre,
             "correo": self.correo
         }
-        
+
     @classmethod
-    def from_dict(cls, datos: dict) -> "Usuario":
+    def desde_diccionario(cls, datos: dict) -> "Usuario":
         return cls(
-            identificación = str(datos["identificación"]),
-            nombre = str(datos["nombre"]),
-            correo = str(datos["correo"])
-        )       
-        
-    def __str__(self) -> str:
-        return (
-            f"Identificación: {self.identificación} | "
-            f"Nombre: {self.nombre} | "
-            f"Correo: {self.correo}"
-        )    
+            identificacion=datos["identificacion"],
+            nombre=datos["nombre"],
+            correo=datos["correo"]
+        )
